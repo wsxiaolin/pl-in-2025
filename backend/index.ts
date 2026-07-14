@@ -52,7 +52,6 @@ async function generateImg(item: any,type: "experiments" | "discussions") {
   void (await page.goto(`http://localhost:5173/#${type === "experiments" ? "" : "b"}/?filepath=${item.path?.replace(".json", "")}`, {
     waitUntil: "networkidle",
   }));
-  await page.waitForTimeout(1000)
   return await page.screenshot({
     type: "jpeg",
     quality: 80,
