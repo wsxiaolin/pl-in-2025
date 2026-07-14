@@ -1,0 +1,295 @@
+<template>
+  <div id="home">
+    <Header>
+      <div class="user" @click="showModalFn">
+        <img
+          class="avatar"
+          :src="user.avatarUrl || getPath('/@base/assets/user/default-avatar.png')"
+          alt="Avatar"
+        />
+        <div class="user-info">
+          <div class="username">{{ user.username }}</div>
+          <div class="level">{{ $t('user.level') }} {{ user.level }}</div>
+        </div>
+        <div class="resources">
+          <div class="resource">
+            <img class="icon" :src="getPath('/@base/assets/icons/coins.png')" alt="Coins" />
+            <span>{{ user.coins }}</span>
+          </div>
+          <div class="resource">
+            <img class="icon gems" :src="getPath('/@base/assets/icons/gems.png')" alt="Gems" />
+            <span>{{ user.gems }}</span>
+          </div>
+        </div>
+      </div>
+    </Header>
+    <main>
+      <div v-show="isLoading" class="loading"></div>
+      <div v-show="!isLoading" class="block-container">
+        <n-grid :x-gap="12" :y-gap="12" :cols="blockItemsPerRow">
+          <!-- <n-gi>
+            <Actions />
+          </n-gi> -->
+          <n-gi
+            v-for="block in blocks.filter((i) => i.Summaries.length > 0)"
+            :key="getBlockKey(block)"
+          >
+            <div class="block">
+              <TopicBlock v-if="isTopicBlock(block)" :block="block" />
+              <Block v-else :block="block" :maxProjectsPerBlock="maxProjectsPerBlock" />
+            </div>
+          </n-gi>
+        </n-grid>
+      </div>
+    </main>
+  </div>
+  <Footer></Footer>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, onActivated, watch } from 'vue'
+import { NGi, NGrid } from 'naive-ui'
+import { useRoute } from 'vue-router'
+import router from '../router'
+import { checkLogin, getPath, getUserUrl } from '@services/utils'
+import '../layout/loading.css'
+import '../layout/startPage.css'
+import sm from '@storage/index.ts'
+import { useI18n } from 'vue-i18n'
+import Emitter from '@services/eventEmitter'
+import { useResponsive } from '../layout/useResponsive.ts'
+import { login } from '@api/getData'
+import Header from '../components/utils/Header.vue'
+import Footer from '../components/utils/Footer.vue'
+import Block from '../components/blocks/Block.vue'
+import TopicBlock from '../components/blocks/TopicBlock.vue'
+import { showLoginModel } from '@popup/index'
+import type {
+  ListBlock,
+  ResultOf,
+  TopicBlock as TopicBlockType,
+  Users,
+} from '@services/../pl-serve-type-main/type/main'
+
+const isLoading = ref(true)
+const blocks = ref<Array<ListBlock | TopicBlockType>>([])
+const { t } = useI18n()
+
+function isTopicBlock(block: ListBlock | TopicBlockType): block is TopicBlockType {
+  return block.$type === 'Quantum.Models.Contents.TopicBlock, Quantum Models'
+}
+
+function getBlockKey(block: ListBlock | TopicBlockType) {
+  return isTopicBlock(block) ? block.Subject : block.Header
+}
+
+const _user = sm.getObj('userInfo')?.value
+const user =
+  _user?.Avatar >= 1
+    ? ref({
+        coins: _user.Gold,
+        gems: _user.Diamond,
+        level: _user.Level,
+        username: _user.Nickname,
+        avatarUrl: getUserUrl(_user),
+        ID: _user.ID,
+      })
+    : ref({
+        coins: 0,
+        gems: 0,
+        level: 0,
+        username: t('user.clickToLogin'),
+        avatarUrl: getPath('/@base/assets/user/default-avatar.png'),
+        ID: '',
+      })
+
+const { blockItemsPerRow, maxProjectsPerBlock } = useResponsive()
+const route = useRoute()
+
+const githubDataUrl = import.meta.env.VITE_GITHUB_DATA_URL as string
+
+async function fetchFromGithub(filepath: string) {
+  const url = `${githubDataUrl}/gushishang/pl-discussions-before-2025-12/main/experiments/${filepath}.json`
+  try {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const data: { Message: string; Data: { Blocks: Array<ListBlock | TopicBlockType> } } =
+      await response.json()
+    isLoading.value = false
+    blocks.value = [...(data.Data?.Blocks ?? [])]
+  } catch (e) {
+    console.error('Failed to fetch GitHub data:', e)
+    isLoading.value = false
+  }
+}
+
+async function loadFromApi() {
+  async function processAuthInfo() {
+    const ua = sm.getObj('userAuthInfo')
+    if (ua.status === 'success' && ua.value?.token != null) {
+      const res = await login(ua.value.token, ua.value.authCode, true)
+      if (!res.Data?.User) return
+      user.value = {
+        coins: res.Data.User.Gold,
+        gems: res.Data.User.Diamond,
+        level: res.Data.User.Level,
+        username: res.Data.User.Nickname,
+        avatarUrl: getUserUrl(res.Data.User),
+        ID: res.Data.User.ID,
+      }
+    }
+  }
+  async function processHomepageProjects() {
+    const res = await login(null, null)
+    loadPageData(res)
+  }
+  await Promise.allSettled([processAuthInfo(), processHomepageProjects()])
+}
+
+let initialLoadDone = false
+
+onMounted(async () => {
+  const filepath = route.query.filepath as string | undefined
+  if (filepath) {
+    await fetchFromGithub(filepath)
+  } else {
+    await loadFromApi()
+  }
+  initialLoadDone = true
+})
+
+watch(
+  () => route.query.filepath,
+  async (filepath) => {
+    if (!initialLoadDone) return
+    isLoading.value = true
+    if (filepath) {
+      await fetchFromGithub(filepath as string)
+    } else {
+      await loadFromApi()
+    }
+  },
+)
+
+onActivated(() => {
+  window.$Logger.logPageView({
+    pageLink: '/',
+    timeStamp: Date.now(),
+  })
+})
+
+Emitter.on('userLogin', (res) => {
+  if (!res.Data?.User) return
+  user.value = {
+    coins: res.Data.User.Gold,
+    gems: res.Data.User.Diamond,
+    level: res.Data.User.Level,
+    username: res.Data.User.Nickname,
+    avatarUrl: getUserUrl(res.Data.User),
+    ID: res.Data.User.ID,
+  }
+})
+// It is astonishing that server respond with projects data when login with (null,null)
+// And responed with user data when login with token/password
+// Fourtunately, both data has the same structure
+async function loadPageData(response: ResultOf<Users['Authenticate']>) {
+  if (!response.Data) return
+  isLoading.value = false
+  if (response.Data.ContentTags) {
+    Emitter.emit('updateTagConfig', response.Data.ContentTags)
+  }
+  blocks.value = [...(response.Data.Library?.Blocks ?? [])]
+  const userData = response.Data.User
+
+  // Both null-null-login or real-login can get user data,but the previous one is fake
+  // The nickName is null in fake user data
+  if (userData?.Nickname != null) {
+    user.value = {
+      coins: userData.Gold,
+      gems: userData.Diamond,
+      level: userData.Level,
+      username: userData.Nickname || t('user.clickToLogin'),
+      avatarUrl: getUserUrl(userData),
+      ID: userData.ID,
+    }
+  }
+
+  window.$Logger.logPageView({
+    pageLink: '/Account/Login/',
+    timeStamp: Date.now(),
+  })
+}
+
+function showModalFn() {
+  if (checkLogin(false)) {
+    router.push(`/u/${user.value.ID}`)
+    window.$Logger.logPageView({
+      pageLink: '/Profile/',
+      timeStamp: Date.now(),
+    })
+  } else {
+    showLoginModel()
+  }
+}
+</script>
+
+<style scoped>
+/* Header start */
+.user {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.user-info {
+  flex-grow: 1;
+  padding-left: 10px;
+}
+
+.username {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.level {
+  color: #777;
+  white-space: nowrap;
+}
+
+.resources {
+  display: flex;
+  align-items: center;
+}
+
+.resource {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.gems {
+  height: 28px;
+  width: 28px;
+}
+/* Header end */
+
+.block {
+  height: 100%;
+}
+
+.div {
+  box-sizing: border-box;
+}
+</style>

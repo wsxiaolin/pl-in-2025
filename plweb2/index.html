@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: http: data: blob:; img-src * data: blob:; media-src * data: blob:; connect-src * ws: wss:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:; frame-src 'none'; child-src 'self' blob:; object-src 'none';" />
+    <meta name="description" content="Physics Lab Web 物理实验室线上社区" />
+    <meta name="keywords" content="Physics Lab Web, 物理实验室, Physics Lab" />
+    <meta name="google" content="notranslate" />
+    <title>Physics Lab Web</title>
+    <link rel="shortcut icon" href="/assets/icons/logo.png" type="image/png" />
+    <style>
+      .RUser {
+        color: cornflowerblue;
+      }
+      /* 带有internal表示内部链接，例如<user=id> */
+      /* A Tag with internal attribute stands for internal hrefs like <user> */
+      a[internal] {
+        color: cornflowerblue;
+        text-decoration: none;
+      }
+      div {
+        box-sizing: border-box;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
