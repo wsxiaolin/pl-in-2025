@@ -18,7 +18,7 @@ const client = new OSS({
   region: "oss-cn-chengdu",
   accessKeyId: process.env.OSS_ACCESS_KEY_ID as string,
   accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET as string,
-  bucket: "pl-in-202t-test",
+  bucket: "pl-in-2025",
 });
 
 

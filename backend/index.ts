@@ -22,7 +22,6 @@ async function main(type: "experiments" | "discussions") {
     };
     try {
       const fileBuffer = await generateImg(item,type);
-      console.log(item)
       const date = item.path.split("_")[1];
       await uploadFile(`${type}/${item.path}.jpg`, fileBuffer);
       await fs.appendFile(
