@@ -49,7 +49,7 @@ async function generateImg(item: any,type: "experiments" | "discussions") {
     timezoneId: "Asia/Shanghai",
   });
   const page = await context.newPage();
-  void (await page.goto(`http://localhost:5173/#${type === "experiments" ? "" : "b"}/?filepath=${item.path}`, {
+  void (await page.goto(`http://localhost:5173/#${type === "experiments" ? "" : "b"}/?filepath=${item.path?.replace(".json", "")}`, {
     waitUntil: "networkidle",
   }));
   await page.waitForTimeout(1000)

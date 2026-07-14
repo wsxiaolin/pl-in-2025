@@ -116,7 +116,10 @@ export default defineConfig({
       '/github-data': {
         target: 'https://raw.githubusercontent.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace('/github-data', ''),
+        rewrite: (path) => {
+          console.log(path)
+          return path.replace('/github-data', '')
+        },
       },
     },
   },
