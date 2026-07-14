@@ -42,7 +42,7 @@ jobs:
       
       - name: Start generate img script
         run: |
-          cd ../back*
+          cd ./back*
           npm start
       
       - name: Commit and push changes
