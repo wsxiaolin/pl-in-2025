@@ -43,6 +43,7 @@ jobs:
       - name: Start generate img script
         run: |
           cd ./back*
+          npm install
           npm start
       
       - name: Commit and push changes
