@@ -100,4 +100,4 @@ async function generateImg(
   }
 }
 
-main("experiments").catch(console.error);
+main("discussions").catch(console.error);
