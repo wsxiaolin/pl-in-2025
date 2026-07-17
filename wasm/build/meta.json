@@ -1,0 +1,13 @@
+{
+  "ossBase": "https://pl-in-2025.oss-cn-chengdu.aliyuncs.com",
+  "entryCount": 49722,
+  "discussionsCount": 24862,
+  "experimentsCount": 24860,
+  "uniqueDates": 554,
+  "dateRange": {
+    "start": "2024-06-09",
+    "end": "2025-12-14"
+  },
+  "encryptedDataSize": 944722,
+  "xorKeyLength": 16
+}

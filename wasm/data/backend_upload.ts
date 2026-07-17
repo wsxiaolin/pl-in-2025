@@ -1,10 +1,5 @@
-// Alibaba Cloud OSS upload helper
-// 阿里云 OSS 上传工具
-
 import OSS from "ali-oss";
 
-// Validate required environment variables
-// 验证必需的环境变量
 function checkEnvVariables() {
   const requiredEnvVars = ["OSS_ACCESS_KEY_ID", "OSS_ACCESS_KEY_SECRET"];
   const missingVars = requiredEnvVars.filter(
@@ -19,8 +14,6 @@ function checkEnvVariables() {
 
 checkEnvVariables();
 
-// Initialize OSS client — bucket: pl-in-2025, region: oss-cn-chengdu
-// 初始化 OSS 客户端 — 存储桶: pl-in-2025, 区域: oss-cn-chengdu
 const client = new OSS({
   region: "oss-cn-chengdu",
   accessKeyId: process.env.OSS_ACCESS_KEY_ID as string,
@@ -28,10 +21,7 @@ const client = new OSS({
   bucket: "pl-in-2025",
 });
 
-// Upload a file buffer to OSS at the given path
-// 将文件缓冲区上传到 OSS 指定路径
-// Returns the URL of the uploaded file, or empty string on failure
-// 返回上传文件的 URL，失败时返回空字符串
+
 export async function uploadFile(ossPath: string, fileSource: Buffer) {
   try {
     const result = await client.put(ossPath, fileSource);

@@ -1,0 +1,28 @@
+{
+  "name": "pl-wasm-date-lookup",
+  "version": "1.0.0",
+  "description": "WASM module for querying PL-in-2025 image paths by date with anti-scraping protection",
+  "type": "module",
+  "scripts": {
+    "preprocess": "tsx scripts/preprocess.ts",
+    "build:wasm": "node scripts/build-wasm.js",
+    "build": "npm run preprocess && npm run build:wasm",
+    "test": "node test/test.js"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.28.19",
+    "tsx": "^4.23.1"
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "binaryen": "^130.0.0-nightly.20260609",
+    "esbuild": "^0.28.1",
+    "long": "^5.3.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

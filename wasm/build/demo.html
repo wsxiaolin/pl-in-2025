@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PL-in-2025 图片查询</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; }
+    .subtitle { color: #888; margin-bottom: 24px; font-size: 0.9rem; }
+    .input-row {
+      display: flex; gap: 12px; margin-bottom: 16px; align-items: center;
+    }
+    input[type="date"] {
+      padding: 10px 14px; border: 1px solid #333; border-radius: 8px;
+      background: #1a1d27; color: #e0e0e0; font-size: 1rem; outline: none;
+    }
+    input[type="date"]:focus { border-color: #4a9eff; }
+    button {
+      padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
+      background: #4a9eff; color: #fff; font-size: 1rem; font-weight: 500;
+      transition: background 0.2s;
+    }
+    button:hover:not(:disabled) { background: #3a8eef; }
+    button:disabled { background: #333; cursor: not-allowed; }
+    .status {
+      padding: 8px 14px; border-radius: 8px; font-size: 0.85rem;
+      background: #1a1d27; border: 1px solid #333;
+    }
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px; margin-top: 20px;
+    }
+    .card {
+      background: #1a1d27; border: 1px solid #2a2d37; border-radius: 12px;
+      overflow: hidden; transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-2px); border-color: #444; }
+    .card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .card-info { padding: 10px 14px; }
+    .card-time { font-size: 0.85rem; color: #4a9eff; margin-bottom: 4px; }
+    .card-type { font-size: 0.75rem; color: #888; }
+    .empty { text-align: center; padding: 60px; color: #555; }
+    .error { color: #ff6b6b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PL-in-2025 图片查询</h1>
+    <p class="subtitle">WASM 驱动 · 传入日期查询当天全部图片</p>
+    <div class="input-row">
+      <input type="date" id="dateInput" value="2024-06-09" min="2024-06-09" max="2025-12-14">
+      <button id="queryBtn" disabled>查询</button>
+      <span class="status" id="status">加载中...</span>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <script type="module">
+    import { PlImageQuery, buildOssUrl } from "./pl_image_query.js";
+
+    const statusEl = document.getElementById("status");
+    const dateInput = document.getElementById("dateInput");
+    const queryBtn = document.getElementById("queryBtn");
+    const resultsEl = document.getElementById("results");
+
+    let query;
+
+    try {
+      query = await PlImageQuery.create("./data.enc", "./pl_image_query.wasm");
+      statusEl.textContent = `就绪 · ${query.getEntryCount()} 条记录 · 剩余 ${query.getRemainingQueries()} 次查询`;
+      queryBtn.disabled = false;
+    } catch (e) {
+      statusEl.innerHTML = `<span class="error">加载失败: ${e.message}</span>`;
+    }
+
+    async function doQuery() {
+      const date = dateInput.value;
+      if (!date) return;
+
+      resultsEl.innerHTML = '<div class="empty">查询中...</div>';
+
+      const results = query.queryByDate(date);
+
+      if (results.length === 0) {
+        resultsEl.innerHTML = '<div class="empty">当天无图片数据</div>';
+        statusEl.textContent = `剩余 ${query.getRemainingQueries()} 次查询`;
+        return;
+      }
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+
+      for (const entry of results) {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const img = document.createElement("img");
+        img.src = buildOssUrl(entry.path);
+        img.loading = "lazy";
+        img.onerror = function() { this.style.background = "#1a1d27"; this.alt = "加载失败"; };
+
+        const info = document.createElement("div");
+        info.className = "card-info";
+        const type = entry.path.startsWith("discussions") ? "discussions" : "experiments";
+        info.innerHTML = `<div class="card-time">${entry.time}</div><div class="card-type">${type}</div>`;
+
+        card.appendChild(img);
+        card.appendChild(info);
+        grid.appendChild(card);
+      }
+
+      resultsEl.innerHTML = "";
+      resultsEl.appendChild(grid);
+      statusEl.textContent = `${results.length} 张图片 · 剩余 ${query.getRemainingQueries()} 次查询`;
+    }
+
+    queryBtn.addEventListener("click", doQuery);
+    dateInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doQuery(); });
+
+    // Auto-query on load
+    if (query) doQuery();
+  </script>
+</body>
+</html>

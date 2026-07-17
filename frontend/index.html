@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="欢迎来到Physics-Lab-In-2025物理实验室APP2024.6-2025.12的变迁记录，约五万张快照，一起回顾论坛的发展历史吧！" />
+    <link rel="icon" href="/iocn.png" />
+    <meta name="keywords" content="物理实验室,physics-lab,plweb,plweb-in-2025" />
+    <title>pl · in 2025 - 与物实共度的时光</title>
+  </head>
+  <body>
+    <div class="frame-wrap">
+      <header class="masthead">
+        <p class="eyebrow"> 2025 · Roll of the Year</p>
+        <h1>pl<span class="dot">·</span>in 2025</h1>
+        <p class="tagline">逐日显影，按下的每一格快门都留在这里</p>
+      </header>
+
+      <section class="query-panel" id="query-panel">
+        <div class="field">
+          <label for="date-input">日期 · Date</label>
+          <input type="date" id="date-input" min="2024-06-09" max="2025-12-31" value="2025-03-14">
+        </div>
+        <div class="filter-group" id="filter-bar" hidden>
+          <button class="filter-btn active" id="filter-toggle" data-filter="experiments">实验↻</button>
+        </div>
+        <button id="search-btn" type="button">回顾 · Review</button>
+      </section>
+
+      <section class="result-stage" id="result-stage"></section>
+
+      <section class="filmstrip-wrap" id="filmstrip-wrap" hidden>
+        <p class="filmstrip-label" id="filmstrip-label">当日所有记录</p>
+        <div class="filmstrip-band">
+          <div class="sprocket-row"></div>
+          <div class="filmstrip" id="filmstrip"></div>
+          <div class="sprocket-row"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+      <button class="lightbox-close" id="lightbox-close" aria-label="关闭">&times;</button>
+      <img id="lightbox-img" src="" alt="">
+      <p class="lightbox-caption" id="lightbox-caption"></p>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,24 +1,15 @@
-// pl-in-2025 Backend Screenshot Pipeline
-// 后端截图流水线 — 从 GitHub JSON tree 截图并上传 OSS
-
 import fs from "fs/promises";
 import path from "path";
 import { chromium, Browser } from "playwright";
 import { uploadFile } from "./upload";
 
-// Number of concurrent screenshot workers
-// 并发截图工作线程数
 const CONCURRENCY = 4;
 
 async function main(type: "experiments" | "discussions") {
-  // Load the GitHub tree JSON (list of all post JSON files)
-  // 加载 GitHub tree JSON（所有帖子 JSON 文件的列表）
   const rawGhContent = await fs.readFile(
     path.join(process.cwd(), `./${type}.json`),
     "utf-8",
   );
-  // Load already-processed log to skip completed items
-  // 加载已处理日志，跳过已完成的项目
   const logsRawContent = await fs.readFile(
     path.join(process.cwd(), `./${type}_logs.txt`),
     "utf-8",
@@ -27,8 +18,6 @@ async function main(type: "experiments" | "discussions") {
   const ghContent = JSON.parse(rawGhContent);
   const logsContent = logsRawContent.split("\n");
 
-  // Build work queue from tree entries
-  // 从 tree 条目构建工作队列
   const queue = [...ghContent.tree];
 
   const browser = await chromium.launch({
@@ -36,42 +25,28 @@ async function main(type: "experiments" | "discussions") {
   });
 
   try {
-    // Worker: process items from queue with concurrency control
-    // 工作线程：从队列中取出项目进行处理（并发控制）
     async function worker() {
       while (true) {
         const item = queue.shift();
         if (!item) return;
 
-        // Skip already-processed items
-        // 跳过已处理的项目
         if (logsContent.includes(item.path)) {
           console.log(`Skipped ${item.path} as it is already processed.`);
           continue;
         }
 
         try {
-          // Take a Playwright screenshot of the plweb2 page
-          // 使用 Playwright 对 plweb2 页面截图
           const fileBuffer = await generateImg(browser, item, type);
 
-          // Extract date from filename: data_YYYY-MM-DD_HH-MM-SS.json
-          // 从文件名中提取日期
           const date = item.path.split("_")[1];
 
-          // Upload screenshot to OSS
-          // 将截图上传到 OSS
           await uploadFile(`${type}/${item.path}.jpg`, fileBuffer);
 
-          // Record in log to skip on next run
-          // 记录日志，下次运行时跳过
           await fs.appendFile(
             path.join(process.cwd(), `./${type}_logs.txt`),
             `${item.path}\n`,
           );
 
-          // Record in output manifest for WASM preprocessing
-          // 记录到 output 清单，供 WASM 预处理使用
           await fs.appendFile(
             path.join(process.cwd(), `./${type}_output.txt`),
             `${date}$${item.path}\n`,
@@ -84,8 +59,6 @@ async function main(type: "experiments" | "discussions") {
       }
     }
 
-    // Run concurrent workers
-    // 启动并发工作线程
     await Promise.all(
       Array.from({ length: CONCURRENCY }, () => worker()),
     );
@@ -94,15 +67,11 @@ async function main(type: "experiments" | "discussions") {
   }
 }
 
-// Take a Playwright screenshot of the plweb2 community post page
-// 使用 Playwright 截取 plweb2 社区帖子页面的截图
 async function generateImg(
   browser: Browser,
   item: any,
   type: "experiments" | "discussions",
 ) {
-  // Use 2x DPR for retina-quality screenshots
-  // 使用 2x DPR 获得 Retina 质量截图
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
     deviceScaleFactor: 2,
@@ -113,8 +82,6 @@ async function generateImg(
   try {
     const page = await context.newPage();
 
-    // Navigate to the plweb2 post page — different routes for discussions vs experiments
-    // 导航到 plweb2 帖子页面 — discussions 和 experiments 路由不同
     await page.goto(
       `http://localhost:5173/#${
         type === "experiments" ? "" : "b"
@@ -124,8 +91,6 @@ async function generateImg(
       },
     );
 
-    // Capture as JPEG
-    // 以 JPEG 格式截图
     return await page.screenshot({
       type: "jpeg",
       quality: 80,
@@ -135,6 +100,4 @@ async function generateImg(
   }
 }
 
-// Entry point — currently configured for discussions
-// 入口点 — 当前配置为处理 discussions
 main("discussions").catch(console.error);
