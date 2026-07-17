@@ -3,7 +3,7 @@ name: Deploy Frontend to GH-Pages
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: write
