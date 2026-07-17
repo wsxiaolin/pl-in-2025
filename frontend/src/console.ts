@@ -40,8 +40,8 @@ const textRight3 = 'background: #B5EAD7; color: #2D5A27; padding: 4px 12px; bord
 // 顺序打印主函数
 export async function consoleToConsole() {
   console.log('%c疑惑的%c这是......干啥呢？', tagLeft, textRight1);
-  await consoleImg("/c1.png");
+  await consoleImg("./c1.png");
   console.log('%c害怕的%c不会是冲我来的吧...', tagLeft, textRight2);
-  await consoleImg("/c2.png");
+  await consoleImg("./c2.png");
   console.log('%c软软的%c不要遍历我a（哭）', tagLeft, textRight3);
 }
