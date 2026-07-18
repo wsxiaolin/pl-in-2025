@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="100%" role="img" aria-label="Architecture: plweb2 Vue app feeds the backend screenshot pipeline, which feeds the WASM query engine, which feeds the frontend gallery.">
+  <defs>
+    <linearGradient id="aBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBF5"/>
+      <stop offset="100%" stop-color="#FAF4E8"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#D97706"/>
+    </marker>
+    <marker id="arrowSky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0EA5E9"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="620" fill="url(#aBg)"/>
+
+  <!-- Section title -->
+  <text x="60" y="56" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#D97706" letter-spacing="3">01 · ARCHITECTURE</text>
+  <text x="60" y="86" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="700" fill="#2C2A26">Four stages, one pipeline</text>
+  <text x="60" y="112" font-family="ui-sans-serif, system-ui, sans-serif" font-size="15" fill="#6B665C">From a Vue community app to a polaroid gallery — data flows downward, never upward.</text>
+
+  <!-- Stage 1: plweb2 -->
+  <g transform="translate(60, 150)">
+    <rect width="1080" height="90" rx="10" fill="#FFFFFF" stroke="#E8DFCC"/>
+    <rect width="6" height="90" rx="3" fill="#42B883"/>
+    <text x="30" y="34" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#42B883" letter-spacing="1">STAGE 01</text>
+    <text x="30" y="60" font-family="ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="700" fill="#2C2A26">plweb2 · Vue App</text>
+    <text x="30" y="80" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#6B665C">Physics Lab community web application — the source of posts and discussions.</text>
+    <text x="1050" y="55" text-anchor="end" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#6B665C">Vue 3 · TypeScript · Vite</text>
+  </g>
+  <line x1="600" y1="240" x2="600" y2="270" stroke="#D97706" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="615" y="262" font-family="ui-monospace, monospace" font-size="11" fill="#6B665C">Playwright screenshot</text>
+
+  <!-- Stage 2: backend -->
+  <g transform="translate(60, 270)">
+    <rect width="1080" height="90" rx="10" fill="#FFFFFF" stroke="#E8DFCC"/>
+    <rect width="6" height="90" rx="3" fill="#D97706"/>
+    <text x="30" y="34" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#D97706" letter-spacing="1">STAGE 02</text>
+    <text x="30" y="60" font-family="ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="700" fill="#2C2A26">backend · Processing pipeline</text>
+    <text x="30" y="80" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#6B665C">Reads GitHub JSON tree → Playwright screenshots → uploads to Aliyun OSS → writes output manifests.</text>
+    <text x="1050" y="55" text-anchor="end" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#6B665C">discussions_output.txt · experiments_output.txt</text>
+  </g>
+  <line x1="600" y1="360" x2="600" y2="390" stroke="#D97706" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="615" y="382" font-family="ui-monospace, monospace" font-size="11" fill="#6B665C">data sync</text>
+
+  <!-- Stage 3: wasm -->
+  <g transform="translate(60, 390)">
+    <rect width="1080" height="90" rx="10" fill="#FFFFFF" stroke="#E8DFCC"/>
+    <rect width="6" height="90" rx="3" fill="#A855F7"/>
+    <text x="30" y="34" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#A855F7" letter-spacing="1">STAGE 03</text>
+    <text x="30" y="60" font-family="ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="700" fill="#2C2A26">wasm · Query engine</text>
+    <text x="30" y="80" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#6B665C">Preprocess encodes manifests → XOR-encrypted binary → AssemblyScript WASM decrypts &amp; queries by date in-browser.</text>
+    <text x="1050" y="55" text-anchor="end" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#6B665C">data.enc · pl_image_query.wasm · .js</text>
+  </g>
+  <line x1="600" y1="480" x2="600" y2="510" stroke="#0EA5E9" stroke-width="2" marker-end="url(#arrowSky)"/>
+  <text x="615" y="502" font-family="ui-monospace, monospace" font-size="11" fill="#6B665C">asset copy</text>
+
+  <!-- Stage 4: frontend -->
+  <g transform="translate(60, 510)">
+    <rect width="1080" height="90" rx="10" fill="#FFFFFF" stroke="#E8DFCC"/>
+    <rect width="6" height="90" rx="3" fill="#0EA5E9"/>
+    <text x="30" y="34" font-family="ui-monospace, monospace" font-size="12" font-weight="600" fill="#0EA5E9" letter-spacing="1">STAGE 04</text>
+    <text x="30" y="60" font-family="ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="700" fill="#2C2A26">frontend · Polaroid gallery</text>
+    <text x="30" y="80" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#6B665C">Date picker → WASM query → OSS image URLs → renders polaroid-style prints &amp; auto-scrolling filmstrip.</text>
+    <text x="1050" y="55" text-anchor="end" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#6B665C">Vite · TypeScript</text>
+  </g>
+</svg>

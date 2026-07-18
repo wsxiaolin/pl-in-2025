@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 80" width="100%" role="img" aria-label="MIT licensed · Physics Lab community project">
+  <rect width="1200" height="80" fill="#FAF4E8"/>
+  <line x1="60" y1="0" x2="1140" y2="0" stroke="#E8DFCC"/>
+  <circle cx="80" cy="40" r="6" fill="#D97706"/>
+  <text x="100" y="46" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="600" fill="#2C2A26">pl · in 2025</text>
+  <text x="220" y="46" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#6B665C">·  Physics Lab community activity  ·  MIT License  ·  Built with Vue 3 · AssemblyScript · Playwright</text>
+</svg>

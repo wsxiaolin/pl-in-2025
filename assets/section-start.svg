@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" width="100%" role="img" aria-label="03 Get started">
+  <rect width="1200" height="120" fill="#FFFBF5"/>
+  <line x1="60" y1="60" x2="120" y2="60" stroke="#0EA5E9" stroke-width="3"/>
+  <text x="140" y="50" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#0EA5E9" letter-spacing="3">03 · GET STARTED</text>
+  <text x="140" y="80" font-family="ui-sans-serif, system-ui, sans-serif" font-size="24" font-weight="700" fill="#2C2A26">Run the full pipeline locally</text>
+</svg>
